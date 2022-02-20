@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script>
+        fetch('https://5c230da35db0f6001345fea3.mockapi.io/api/v1/menu')
+            .then(response => response.json())
+            .then(data => {
+                createTable(data);
+            });
+
+
+        var currentPageIndex = 0;
+        var recordSize = 5;
+        function createTable(data) {
+            var tableStr = '<table id="mytable"><tr><th>ID</th><th>Name</th></tr>';
+            for (var i = currentPageIndex * recordSize; i < data.length && i < currentPageIndex * recordSize + recordSize; i++) {
+                tableStr += '<tr><td>' + data[i].id + '</td><td> ' + data[i].name + ' </td></tr>'
+            }
+            tableStr += '</table>'
+            document.getElementById("spTable").innerHTML = tableStr;
+        }
+
+
+        function myFunction() {
+            var tableStr, tr, td;
+            var table = document.getElementById("mytable");
+            var input= document.getElementById("myInput");
+            filter = input.value.toUpperCase();
+            tr = table.getElementsByTagName("tr");
+            for (var i = 0; i < tr.length; i++) {
+                td = tr[i].getElementsByTagName("td")[1];
+                if (td) {
+                    txtValue = td.textContent || td.innerText;
+                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+        }
+
+
+        function next() {
+            currentPageIndex++;
+            fetch('https://5c230da35db0f6001345fea3.mockapi.io/api/v1/menu')
+                .then(response => response.json())
+                .then(data => {
+                    createTable(data);
+                });
+        }
+        function prev() {
+            currentPageIndex--;
+            fetch('https://5c230da35db0f6001345fea3.mockapi.io/api/v1/menu')
+                .then(response => response.json())
+                .then(data => {
+                    createTable(data);
+                });
+        }
+
+    </script>
+    <style>
+        #txtnext {
+            margin-left: 90%;
+        }
+        #myInput{
+            margin-left: 40%;
+        }
+        table {
+            font-family: arial, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        td,
+        th {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #dddddd;
+        }
+    </style>
+</head>
+
+<body>
+    <p><span id="txtResult"></span></p>
+    <span id="spTable"></span>
+    <button id="txtprev" onclick="prev()">Prev </button>
+    <button id="txtnext" onclick="next()">Next </button> <br><br>
+    <input type="text" id="myInput" onkeyup="myFunction()" placeholder="Search for names.." title="Type in a name">
+</body>
+</html>
